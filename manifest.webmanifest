@@ -1,9 +1,8 @@
 {
-  "name": "Metro Partir",
-  "short_name": "Metro Partir",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#111827",
-  "icons": []
+  "name":"Metro Partir",
+  "short_name":"Metro Partir",
+  "start_url":".",
+  "display":"standalone",
+  "background_color":"#f3f4f6",
+  "theme_color":"#111827"
 }

@@ -1,14 +1,82 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#111827" />
-  <link rel="manifest" href="/manifest.webmanifest" />
-  <title>Metro Partir</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111827">
+<link rel="manifest" href="./manifest.webmanifest">
+<title>Metro Partir</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f3f4f6;color:#111827}
+.wrap{max-width:720px;margin:auto;padding:20px}.hero{padding:24px 0 10px}.hero h1{font-size:32px;margin:0 0 6px}
+.muted{color:#6b7280}.card{background:#fff;border-radius:20px;padding:20px;margin:14px 0;box-shadow:0 5px 25px #0000000d}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:600px){.grid{grid-template-columns:1fr}}
+label{display:block;font-weight:650;font-size:14px;margin-bottom:7px}input,select{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:12px;font-size:16px;background:#fff}
+button{border:0;border-radius:12px;padding:13px 16px;font-size:16px;font-weight:700;cursor:pointer;background:#111827;color:#fff}
+.secondary{background:#e5e7eb;color:#111827}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.result{font-size:18px}.big{font-size:42px;font-weight:800;margin:8px 0}.departure{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #eee}
+.pill{padding:6px 9px;border-radius:999px;background:#eef2ff;font-size:13px;font-weight:700}
+</style>
 </head>
 <body>
-  <div id="app"></div>
-  <script type="module" src="/src/main.js"></script>
-</body>
-</html>
+<main class="wrap">
+<section class="hero"><h1>🚇 Metro Partir</h1><div class="muted">Dis-moi quand sortir pour attraper ton métro.</div></section>
+
+<section class="card">
+<div class="grid">
+<div><label>Station de départ</label><input id="station" value="Château de Vincennes"></div>
+<div><label>Ligne</label><select id="line"><option>1</option><option>4</option><option>8</option><option>9</option><option>RER A</option></select></div>
+</div>
+<div class="grid" style="margin-top:12px">
+<div><label>Temps de marche (min)</label><input id="walk" type="number" min="0" value="7"></div>
+<div><label>Marge de sécurité (min)</label><input id="margin" type="number" min="0" value="3"></div>
+</div>
+<div class="actions">
+<button id="notify">🔔 Activer les notifications</button>
+<button id="refresh" class="secondary">↻ Actualiser</button>
+</div>
+<div id="status" class="muted" style="margin-top:12px"></div>
+</section>
+
+<section class="card"><div class="muted">Prochains passages — démonstration</div><div id="departures"></div></section>
+
+<section class="card result"><div class="muted">Tu dois partir à</div><div id="leave" class="big">--:--</div><div id="reason" class="muted"></div></section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+let timer;
+function times(){
+ const now=new Date(); let first=new Date(now);
+ first.setSeconds(0,0);
+ first.setMinutes(Math.ceil((now.getMinutes()+1)/5)*5);
+ return [first,new Date(first.getTime()+7*60000),new Date(first.getTime()+14*60000)];
+}
+function hhmm(d){return d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}
+function calculate(){
+ const walk=Number($('walk').value)||0, margin=Number($('margin').value)||0, ds=times(), chosen=ds[0];
+ const leave=new Date(chosen.getTime()-(walk+margin)*60000);
+ $('departures').innerHTML=ds.map(d=>`<div class="departure"><div><strong>${hhmm(d)}</strong><br><span class="muted">dans ${Math.max(0,Math.round((d-Date.now())/60000))} min</span></div><span class="pill">Ligne ${$('line').value}</span></div>`).join('');
+ $('leave').textContent=hhmm(leave);
+ $('reason').textContent=`Pour le métro de ${hhmm(chosen)} • ${walk} min de marche + ${margin} min de marge.`;
+ return leave;
+}
+async function notify(){
+ if(!('Notification' in window)){ $('status').textContent='Notifications non supportées par ce navigateur.'; return; }
+ const p=await Notification.requestPermission();
+ if(p==='granted'){
+   $('status').textContent='✅ Notifications activées.';
+   schedule();
+ }else $('status').textContent='Permission refusée.';
+}
+function schedule(){
+ clearTimeout(timer); const leave=calculate(), delay=leave-Date.now();
+ if(delay>0 && Notification.permission==='granted'){
+   timer=setTimeout(()=>new Notification('🚇 Il est temps de partir !',{body:`Pars maintenant pour attraper ton métro de ${hhmm(new Date(leave.getTime()+(Number($('walk').value)+Number($('margin').value))*60000))}.`}),delay);
+ }
+}
+$('notify').onclick=notify;$('refresh').onclick=schedule;
+['station','line','walk','margin'].forEach(id=>$(id).onchange=schedule);
+calculate();
+</script>
+</body></html>

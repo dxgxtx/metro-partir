@@ -1,61 +1,11 @@
-# 🚇 Metro Partir
+# Metro Partir — GitHub Pages
 
-Application web/PWA qui calcule quand quitter son domicile pour attraper le prochain métro.
+Version statique compatible directement avec GitHub Pages.
 
-## 1. Installer
+## Installation
 
-```bash
-npm install
-npm run dev
-```
+Remplace le contenu de ton dépôt GitHub par les fichiers de ce dossier.
 
-Puis ouvrir l'URL affichée par Vite.
+Important : cette version n'utilise pas Vite, donc elle fonctionne directement depuis une URL GitHub Pages du type `/metro-partir/`.
 
-## 2. Première version
-
-Cette version contient :
-- interface mobile/PWA ;
-- station et ligne configurables ;
-- temps de marche ;
-- marge de sécurité ;
-- calcul de l'heure de départ ;
-- demande d'autorisation de notifications ;
-- notification locale lorsque la page reste active.
-
-## 3. Prochaine étape : horaires IDFM
-
-Île-de-France Mobilités propose une API "Prochains passages" en temps réel.
-Il faudra créer un compte PRIM, obtenir un token API et mettre en place un petit backend pour ne jamais exposer le token dans le navigateur.
-
-Architecture prévue :
-
-```text
-Téléphone
-   ↓
-PWA Metro Partir
-   ↓
-Backend / API proxy
-   ↓
-API Prochains passages IDFM
-   ↓
-Métro réel
-```
-
-## 4. Notification fiable en arrière-plan
-
-La prochaine version utilisera Web Push :
-- le téléphone enregistre son abonnement push ;
-- le serveur surveille le prochain passage ;
-- le serveur déclenche la notification ;
-- l'application peut recalculer si le métro est retardé.
-
-Pour une utilisation réelle, cette solution est préférable à un simple `setTimeout()` dans le navigateur.
-
-## 5. Sécurité
-
-Ne jamais mettre le token PRIM directement dans `src/main.js`.
-Le token doit rester dans une variable secrète du backend.
-
-## 6. GitHub Pages
-
-Le frontend peut ensuite être publié sur GitHub Pages. Pour le temps réel et les notifications en arrière-plan, il faudra conserver un backend/serverless séparé.
+Les horaires sont encore simulés. La prochaine étape sera de connecter l'API temps réel Île-de-France Mobilités.
