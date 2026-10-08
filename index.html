@@ -5,59 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#111827">
   <link rel="manifest" href="./manifest.webmanifest">
-  <title>Metro Partir</title>
+  <title>Partir Crèche</title>
   <style>
     *{box-sizing:border-box}
     body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f3f4f6;color:#111827}
-    .wrap{max-width:720px;margin:auto;padding:20px}
-    .hero{padding:24px 0 10px}.hero h1{font-size:32px;margin:0 0 6px}
-    .muted{color:#6b7280}
+    .wrap{max-width:760px;margin:auto;padding:20px}
+    .hero{padding:18px 0 10px}.hero h1{font-size:31px;margin:0 0 6px}.muted{color:#6b7280}
     .card{background:#fff;border-radius:20px;padding:20px;margin:14px 0;box-shadow:0 5px 25px #0000000d}
+    .route{border:2px solid #e5e7eb;border-radius:16px;padding:16px;margin-top:12px}
+    .route.best{border-color:#111827}
+    .routehead{display:flex;justify-content:space-between;gap:12px;align-items:center}
+    .line{font-size:25px;font-weight:850}.direction{font-weight:700}
+    .time{font-size:28px;font-weight:850}.small{font-size:13px}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     @media(max-width:600px){.grid{grid-template-columns:1fr}}
     label{display:block;font-weight:650;font-size:14px;margin-bottom:7px}
-    input,select{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:12px;font-size:16px;background:#fff}
+    input{width:100%;padding:12px;border:1px solid #d1d5db;border-radius:12px;font-size:16px;background:#fff}
     button{border:0;border-radius:12px;padding:13px 16px;font-size:16px;font-weight:700;cursor:pointer;background:#111827;color:#fff}
     button:disabled{opacity:.6;cursor:wait}
-    .secondary{background:#e5e7eb;color:#111827}
     .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-    .status{margin-top:12px;font-size:14px}
-    .departure{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #eee}
-    .departure:last-child{border-bottom:0}
-    .time{font-size:22px;font-weight:800}
-    .pill{padding:6px 9px;border-radius:999px;background:#eef2ff;font-size:13px;font-weight:700}
-    .result{text-align:center}.big{font-size:46px;font-weight:850;margin:8px 0}
-    .ok{color:#047857}.warn{color:#b45309}.error{color:#b91c1c}
-    .small{font-size:13px}
+    .status{margin-top:12px;font-size:14px}.ok{color:#047857}.error{color:#b91c1c}
+    .steps{margin-top:12px;line-height:1.65}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#eef2ff;font-size:13px;font-weight:750}
+    .result{text-align:center}.big{font-size:46px;font-weight:900;margin:8px 0}
   </style>
 </head>
 <body>
 <main class="wrap">
   <section class="hero">
-    <h1>🚇 Metro Partir</h1>
-    <div class="muted">Les vrais prochains passages et l'heure à laquelle partir.</div>
+    <h1>🚼 Partir Crèche</h1>
+    <div class="muted">Compare le 301 et le 122 en temps réel.</div>
   </section>
 
   <section class="card">
-    <div class="grid">
-      <div>
-        <label for="station">Station</label>
-        <select id="station">
-          <option value="STIF:StopPoint:Q:22104:">Château de Vincennes</option>
-        </select>
-      </div>
-      <div>
-        <label for="line">Ligne</label>
-        <select id="line">
-          <option value="STIF:Line::C01371:">Métro 1</option>
-        </select>
-      </div>
-    </div>
+    <div><strong>🏠 Domicile → 🚏 Charles Garcia → 🏫 La Fontaine</strong></div>
+    <div class="muted small" style="margin-top:6px">Les deux options partent du même arrêt. L'application choisit celle qui permet d'arriver le plus tôt.</div>
 
-    <div class="grid" style="margin-top:12px">
+    <div class="grid" style="margin-top:16px">
       <div>
-        <label for="walk">Temps de marche (min)</label>
-        <input id="walk" type="number" min="0" value="7">
+        <label for="walk">Marche jusqu'à Charles Garcia (min)</label>
+        <input id="walk" type="number" min="0" value="4">
       </div>
       <div>
         <label for="margin">Marge de sécurité (min)</label>
@@ -67,168 +53,141 @@
 
     <div class="actions">
       <button id="refresh">↻ Actualiser</button>
-      <button id="notify" class="secondary">🔔 Activer les notifications</button>
     </div>
-
     <div id="status" class="status muted">Connexion aux horaires IDFM…</div>
   </section>
 
   <section class="card">
-    <div class="muted">Prochains passages en temps réel</div>
-    <div id="departures"><div class="muted" style="padding-top:14px">Chargement…</div></div>
+    <div class="muted">Options disponibles</div>
+    <div id="routes">
+      <div class="muted" style="padding-top:14px">Chargement…</div>
+    </div>
   </section>
 
   <section class="card result">
-    <div class="muted">Tu dois partir à</div>
+    <div class="muted">Tu dois partir de chez toi à</div>
     <div id="leave" class="big">--:--</div>
     <div id="reason" class="muted">En attente des horaires.</div>
   </section>
 
   <section class="card small muted">
-    Les horaires sont récupérés en temps réel. Pour cette première version, la notification fonctionne lorsque l'application reste ouverte.
+    ℹ️ Les horaires des bus viennent d'Île-de-France Mobilités via ton Worker Cloudflare.
+    Le temps de marche et la marge sont modifiables.
   </section>
 </main>
 
 <script>
-const API_URL = "https://fragrant-flower-2253.ayadimedaziz.workers.dev/metro";
+const API_BASE = "https://fragrant-flower-2253.ayadimedaziz.workers.dev";
+
+const ROUTES = [
+  { key:"301", line:"301", direction:"Bobigny", rideMin:4 },
+  { key:"122", line:"122", direction:"Gallieni", rideMin:3 }
+];
 
 const $ = id => document.getElementById(id);
-let reminderTimer = null;
-let latestData = null;
+let latestRoutes = [];
 
-function formatTime(iso) {
+function formatTime(iso){
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "--:--";
-  return d.toLocaleTimeString("fr-FR", {hour:"2-digit", minute:"2-digit"});
+  if(Number.isNaN(d.getTime())) return "--:--";
+  return d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
 }
 
-function minutesUntil(iso) {
-  const d = new Date(iso);
-  return Math.max(0, Math.round((d.getTime() - Date.now()) / 60000));
+function minutesUntil(iso){
+  return Math.max(0, Math.round((new Date(iso).getTime()-Date.now())/60000));
 }
 
-function calculateLeave(departureIso) {
-  const walk = Number($("walk").value) || 0;
-  const margin = Number($("margin").value) || 0;
-  return new Date(new Date(departureIso).getTime() - (walk + margin) * 60000);
+function leaveTime(busIso){
+  const walk = Number($("walk").value)||0;
+  const margin = Number($("margin").value)||0;
+  return new Date(new Date(busIso).getTime()-(walk+margin)*60000);
 }
 
-function render(data) {
-  latestData = data;
+function arrivalTime(busIso, rideMin){
+  return new Date(new Date(busIso).getTime()+rideMin*60000);
+}
 
-  const departures = (data.departures || [])
-    .filter(x => x.expectedDeparture || x.expectedArrival)
-    .slice(0, 6);
+function render(){
+  const walk = Number($("walk").value)||0;
+  const margin = Number($("margin").value)||0;
 
-  if (!departures.length) {
-    $("departures").innerHTML = '<div class="muted" style="padding-top:14px">Aucun passage disponible pour le moment.</div>';
-    $("leave").textContent = "--:--";
-    $("reason").textContent = "";
+  const valid = latestRoutes.filter(r => r.departure);
+  if(!valid.length){
+    $("routes").innerHTML='<div class="muted" style="padding-top:14px">Aucun bus disponible pour le moment.</div>';
+    $("leave").textContent="--:--";
+    $("reason").textContent="";
     return;
   }
 
-  $("departures").innerHTML = departures.map(item => {
-    const iso = item.expectedDeparture || item.expectedArrival;
+  valid.sort((a,b)=>new Date(a.departure)-new Date(b.departure));
+  const best = valid[0];
+
+  $("routes").innerHTML = valid.map(r => {
+    const leave = leaveTime(r.departure);
+    const arrival = arrivalTime(r.departure,r.rideMin);
+    const isBest = r.key === best.key;
     return `
-      <div class="departure">
-        <div>
-          <div class="time">${formatTime(iso)}</div>
-          <div class="muted">dans ${minutesUntil(iso)} min</div>
+      <div class="route ${isBest ? "best":""}">
+        <div class="routehead">
+          <div>
+            <div class="line">🚌 ${r.line}</div>
+            <div class="direction">Direction ${r.direction}</div>
+          </div>
+          ${isBest ? '<span class="pill">⭐ plus rapide à prendre</span>':''}
         </div>
-        <div>
-          <span class="pill">Ligne 1</span>
-          <div class="muted small" style="margin-top:6px">${item.destination || ""}</div>
+        <div class="steps">
+          🚏 Charles Garcia<br>
+          🕐 Prochain passage : <strong>${formatTime(r.departure)}</strong>
+          <span class="muted"> (dans ${minutesUntil(r.departure)} min)</span><br>
+          🏁 La Fontaine : vers <strong>${formatTime(arrival.toISOString())}</strong><br>
+          🚶 Départ maison : <strong>${formatTime(leave.toISOString())}</strong>
         </div>
       </div>`;
   }).join("");
 
-  const firstIso = departures[0].expectedDeparture || departures[0].expectedArrival;
-  const leave = calculateLeave(firstIso);
-
-  $("leave").textContent = formatTime(leave.toISOString());
-
-  const walk = Number($("walk").value) || 0;
-  const margin = Number($("margin").value) || 0;
+  const bestLeave = leaveTime(best.departure);
+  $("leave").textContent = formatTime(bestLeave.toISOString());
   $("reason").textContent =
-    `Pour le métro de ${formatTime(firstIso)} • ${walk} min de marche + ${margin} min de marge.`;
-
-  scheduleReminder(firstIso);
+    `Option retenue : bus ${best.line} direction ${best.direction} • ${walk} min de marche + ${margin} min de marge.`;
 }
 
-async function loadMetro() {
-  const button = $("refresh");
-  button.disabled = true;
-  $("status").textContent = "⏳ Actualisation des horaires…";
-  $("status").className = "status muted";
+async function loadRoute(route){
+  const url = `${API_BASE}/bus?line=${encodeURIComponent(route.line)}&direction=${encodeURIComponent(route.direction)}`;
+  const response = await fetch(url,{cache:"no-store"});
+  if(!response.ok) throw new Error(`Erreur ${response.status}`);
+  const data = await response.json();
+  if(data.error) throw new Error(data.error);
+  return {
+    ...route,
+    departure: data.departure || null,
+    destination: data.destination || "La Fontaine"
+  };
+}
 
-  try {
-    const stop = encodeURIComponent($("station").value);
-    const line = encodeURIComponent($("line").value);
-    const response = await fetch(`${API_URL}?stop=${stop}&line=${line}`, {
-      cache: "no-store"
-    });
-
-    if (!response.ok) {
-      throw new Error(`Erreur serveur (${response.status})`);
-    }
-
-    const data = await response.json();
-
-    if (data.error) throw new Error(data.error);
-
-    render(data);
-    $("status").textContent =
-      `✅ Horaires mis à jour à ${new Date().toLocaleTimeString("fr-FR", {hour:"2-digit",minute:"2-digit",second:"2-digit"})}`;
-    $("status").className = "status ok";
-  } catch (error) {
-    console.error(error);
-    $("status").textContent = `❌ Impossible de récupérer les horaires : ${error.message}`;
-    $("status").className = "status error";
-  } finally {
-    button.disabled = false;
+async function loadAll(){
+  $("refresh").disabled=true;
+  $("status").textContent="⏳ Actualisation des bus 301 et 122…";
+  $("status").className="status muted";
+  try{
+    latestRoutes = await Promise.all(ROUTES.map(loadRoute));
+    render();
+    $("status").textContent=`✅ Mis à jour à ${new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}`;
+    $("status").className="status ok";
+  }catch(e){
+    console.error(e);
+    $("status").textContent=`❌ ${e.message}`;
+    $("status").className="status error";
+  }finally{
+    $("refresh").disabled=false;
   }
 }
 
-function scheduleReminder(firstDepartureIso) {
-  clearTimeout(reminderTimer);
+$("refresh").addEventListener("click",loadAll);
+$("walk").addEventListener("input",()=>{if(latestRoutes.length)render()});
+$("margin").addEventListener("input",()=>{if(latestRoutes.length)render()});
 
-  const leave = calculateLeave(firstDepartureIso);
-  const delay = leave.getTime() - Date.now();
-
-  if (delay <= 0 || Notification.permission !== "granted") return;
-
-  reminderTimer = setTimeout(() => {
-    new Notification("🚇 Il est temps de partir !", {
-      body: `Ton métro de ${formatTime(firstDepartureIso)} arrive bientôt.`
-    });
-  }, delay);
-}
-
-async function enableNotifications() {
-  if (!("Notification" in window)) {
-    $("status").textContent = "❌ Les notifications ne sont pas supportées par ce navigateur.";
-    return;
-  }
-
-  const permission = await Notification.requestPermission();
-
-  if (permission === "granted") {
-    $("status").textContent = "🔔 Notifications activées.";
-    $("status").className = "status ok";
-    if (latestData) render(latestData);
-  } else {
-    $("status").textContent = "⚠️ Permission de notification refusée.";
-    $("status").className = "status warn";
-  }
-}
-
-$("refresh").addEventListener("click", loadMetro);
-$("notify").addEventListener("click", enableNotifications);
-$("walk").addEventListener("change", () => { if (latestData) render(latestData); });
-$("margin").addEventListener("change", () => { if (latestData) render(latestData); });
-
-loadMetro();
-setInterval(loadMetro, 60000);
+loadAll();
+setInterval(loadAll,60000);
 </script>
 </body>
 </html>

@@ -1,25 +1,31 @@
-# Metro Partir — V2
+# Partir Crèche — V3
 
-Cette version utilise les vrais prochains passages IDFM via le Worker Cloudflare.
+Cette version remplace le trajet métro par le trajet domicile → crèche.
 
-Frontend :
-- GitHub Pages
+## Itinéraires
 
-Backend :
-- Cloudflare Worker
+- Arrêt de départ : Charles Garcia
+- Bus 301 → direction Bobigny
+- Bus 122 → direction Gallieni
+- Arrivée : La Fontaine
+- Le frontend compare les deux prochains bus.
+- Il calcule l'heure de départ de la maison avec le temps de marche + une marge.
 
-API :
-- Île-de-France Mobilités
+## Backend
 
-URL du backend :
-https://fragrant-flower-2253.ayadimedaziz.workers.dev/metro
+Le Worker Cloudflare utilise le secret `IDFM_API_KEY`.
 
-Le token IDFM n'est jamais présent dans ce dépôt.
+Route :
+`/bus?line=301&direction=Bobigny`
+ou
+`/bus?line=122&direction=Gallieni`
 
-## Installation
+Le token IDFM n'est jamais présent dans GitHub.
 
-Remplacer `index.html` et `manifest.webmanifest` dans le dépôt GitHub Pages.
+## Important
 
-La page recharge les horaires automatiquement toutes les 60 secondes.
+Le temps de trajet bus vers La Fontaine est actuellement une estimation courte basée sur les arrêts du parcours :
+- 301 : 4 min
+- 122 : 3 min
 
-La notification de cette V2 est une notification locale : le navigateur doit rester ouvert. Une prochaine version pourra utiliser Web Push pour fonctionner en arrière-plan.
+On pourra ensuite remplacer ces estimations par l'heure d'arrivée temps réel de la course.
