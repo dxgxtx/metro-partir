@@ -1,11 +1,25 @@
-# Metro Partir — GitHub Pages
+# Metro Partir — V2
 
-Version statique compatible directement avec GitHub Pages.
+Cette version utilise les vrais prochains passages IDFM via le Worker Cloudflare.
+
+Frontend :
+- GitHub Pages
+
+Backend :
+- Cloudflare Worker
+
+API :
+- Île-de-France Mobilités
+
+URL du backend :
+https://fragrant-flower-2253.ayadimedaziz.workers.dev/metro
+
+Le token IDFM n'est jamais présent dans ce dépôt.
 
 ## Installation
 
-Remplace le contenu de ton dépôt GitHub par les fichiers de ce dossier.
+Remplacer `index.html` et `manifest.webmanifest` dans le dépôt GitHub Pages.
 
-Important : cette version n'utilise pas Vite, donc elle fonctionne directement depuis une URL GitHub Pages du type `/metro-partir/`.
+La page recharge les horaires automatiquement toutes les 60 secondes.
 
-Les horaires sont encore simulés. La prochaine étape sera de connecter l'API temps réel Île-de-France Mobilités.
+La notification de cette V2 est une notification locale : le navigateur doit rester ouvert. Une prochaine version pourra utiliser Web Push pour fonctionner en arrière-plan.
